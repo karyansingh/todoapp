@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Todo Application</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .text-strikethrough {
+            text-decoration: line-through;
+            color: grey;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-5">
+    <h1 class="text-center mb-4">📝 Todo Application</h1>
+
+    <!-- Task Input Form -->
+    <form action="/" method="post" class="row g-2 justify-content-center mb-4">
+        <div class="col-md-8">
+            <input type="text" name="title" class="form-control form-control-lg" placeholder="Add a new task..." required>
+        </div>
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-primary btn-lg">Add Task</button>
+        </div>
+    </form>
+
+    <!-- Task Stats -->
+    <div th:if="${tasks.size() > 0}" class="mb-4">
+        <div class="row">
+            <div class="col-md-6">
+                <h5>📊 Task Summary:</h5>
+                <ul class="list-group">
+                    <li class="list-group-item">Total Tasks: <strong th:text="${tasks.size()}"></strong></li>
+                    <li class="list-group-item">Completed:
+                        <strong th:text="${tasks.?[completed].size()}"></strong>
+                    </li>
+                    <li class="list-group-item">Pending:
+                        <strong th:text="${tasks.size() - tasks.?[completed].size()}"></strong>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h5>✅ Completion Status:</h5>
+                <div class="progress mt-2">
+                    <div class="progress-bar bg-success" role="progressbar"
+                         th:style="'width:' + (${tasks.?[completed].size()} * 100 / ${tasks.size()}) + '%'"
+                         th:text="${tasks.?[completed].size()} * 100 / ${tasks.size()} + '%'">
+                        0%
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task List -->
+    <div th:if="${tasks.size() > 0}">
+        <th:block th:each="task : ${tasks}">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <span th:classappend="${task.completed} ? 'text-strikethrough'"
+                          th:text="${task.title}"
+                          class="fs-5">
+                        Task Title
+                    </span>
+                    <div class="btn-group">
+                        <a th:href="@{/{id}/toggle(id=${task.id})}"
+                           class="btn btn-outline-success btn-sm"
+                           th:title="${task.completed} ? 'Mark as Incomplete' : 'Mark as Completed'">
+                            <i class="bi bi-check2-square"></i> Toggle
+                        </a>
+                        <a th:href="@{/{id}/delete(id=${task.id})}"
+                           class="btn btn-outline-danger btn-sm"
+                           title="Delete Task">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+    </div>
+
+    <!-- No Task Message -->
+    <div th:if="${tasks.size() == 0}" class="text-center mt-5">
+        <h4 class="text-muted">🛌 No tasks available. Add one to get started!</h4>
+    </div>
+</div>
+</body>
+</html>
